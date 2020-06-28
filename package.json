@@ -1,0 +1,24 @@
+{
+  "name": "ts-node-template",
+  "version": "0.0.1",
+  "description": "Boilerplate for a TypeScript NodeJS project",
+  "main": "dist/index.js",
+  "repository": "https://github.com/Agnaro/ts-node-template.git",
+  "author": "e70347@gmail.com",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "start": "node .",
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^13.13.0",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.1",
+    "ts-node": "^8.8.2",
+    "typescript": "^3.8.3"
+  }
+}
