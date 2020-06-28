@@ -1,9 +1,9 @@
 {
-  "name": "ts-node-template",
+  "name": "worker-message-bus",
   "version": "0.0.1",
-  "description": "Boilerplate for a TypeScript NodeJS project",
+  "description": "",
   "main": "dist/index.js",
-  "repository": "https://github.com/Agnaro/ts-node-template.git",
+  "repository": "https://github.com/Agnaro/worker-message-bus.git",
   "author": "e70347@gmail.com",
   "license": "MIT",
   "private": false,
