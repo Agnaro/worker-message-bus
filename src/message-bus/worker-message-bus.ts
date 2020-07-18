@@ -1,31 +1,27 @@
 import { postMessageFn, msgEventEmitter } from './interfaces';
 import { PriorityQueue } from './priority-queue';
 import { Message } from './messages/message';
-import {
-  Subject,
-  merge,
-  Observable,
-  combineLatest,
-  timer,
-  EMPTY,
-  NEVER,
-  fromEvent,
-} from 'rxjs';
-import { startWith, scan, shareReplay, map, switchMap } from 'rxjs/operators';
-import { BusState, BusStateCmd } from './message-bus-interface';
+import { Subject, merge, Observable, fromEvent } from 'rxjs';
+import { tap, filter } from 'rxjs/operators';
+import { eqBy } from 'ramda';
+import { ErrorMessage, isErrorMessage } from './messages/error-message';
 
 export class WorkerMessageBus {
+  get allMessages(): Observable<Message> {
+    return this.incomingMsg$;
+  }
+
+  get errorMessages(): Observable<ErrorMessage> {
+    return this.incomingMsg$.pipe(filter(isErrorMessage));
+  }
+
   // == CONSTANTS ===========================================================
-  protected initialBusState: BusState = {
-    updatePeriod: 10,
-    isActive: true,
-  };
 
   // = BASE OBSERVABLES  ====================================================
   // == SOURCE OBSERVABLES ==================================================
-  protected outgoingMsg$ = new Subject<Message<any>>();
+  protected outgoingMsg$ = new Subject<Message>();
 
-  protected incomingMsg$: Observable<Message<any>> = fromEvent(
+  protected incomingMsg$: Observable<Message> = fromEvent(
     this.msgEvtEmitter,
     'message'
   );
@@ -35,9 +31,15 @@ export class WorkerMessageBus {
   // == INTERMEDIATE OBSERVABLES ============================================
 
   // = SIDE EFFECTS =========================================================
-  // == SUBSCRIPTION ========================================================
   // === INPUTs =============================================================
   // === OUTPUTS ============================================================
+  protected outgoingMsgHandler$ = this.outgoingMsg$.pipe(
+    tap((msg) => this.post(msg))
+  );
+
+  // == SUBSCRIPTION ========================================================
+  protected subscription = merge(this.outgoingMsgHandler$).subscribe();
+
   // = HELPER ===============================================================
   // = CUSTOM OPERATORS =====================================================
   // == CREATION METHODS ====================================================
@@ -50,5 +52,10 @@ export class WorkerMessageBus {
 
   send<T>(msg: Message<T>) {
     this.outgoingMsg$.next(msg);
+  }
+
+  sendWithResponse<T>(msg: Message<T>): Observable<Message<T>> {
+    this.send(msg);
+    return this.incomingMsg$.pipe(filter(eqBy((m) => m.id, msg)));
   }
 }

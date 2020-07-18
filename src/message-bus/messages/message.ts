@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-export abstract class Message<T> {
+export abstract class Message<T = any> {
   get priority() {
     return this._priority;
   }

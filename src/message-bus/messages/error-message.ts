@@ -1,6 +1,5 @@
 import { Message } from './message';
 import { MsgTypeRegistry } from './message-type-registry';
-import { inherits } from 'util';
 
 export const BusErrorMessageType = 'MESSAGE_BUS_ERROR';
 
@@ -11,6 +10,10 @@ export class ErrorMessage extends Message<BusError> {
 }
 
 MsgTypeRegistry.register(ErrorMessage, BusErrorMessageType);
+
+export function isErrorMessage(msg: Message): msg is ErrorMessage {
+  return msg.kind === BusErrorMessageType;
+}
 
 export interface BusError {
   message: string;
